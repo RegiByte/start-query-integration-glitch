@@ -12,14 +12,14 @@ const tasks = {
     {
       id: 2,
       name: "User 1 Task 2",
-      completed: false,
+      completed: true,
     },
   ],
   user_2: [
     {
       id: 1,
       name: "User 2 Task 1",
-      completed: false,
+      completed: true,
     },
     {
       id: 2,
@@ -34,7 +34,7 @@ export const getUserData = createServerFn({
 }).handler(async () => {
   const activeUser = getCookie(cookieKey);
   console.log("activeUser", activeUser);
-  
+
   if (!activeUser) {
     return {
       activeUser: null,

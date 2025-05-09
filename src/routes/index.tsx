@@ -58,7 +58,7 @@ function Home() {
               <span
                 className={isLoading ? "text-yellow-400" : "text-green-400"}
               >
-                {isLoading ? "true" : "false"}
+                {isLoading ? "Yes" : "No"}
               </span>
             </p>
             <p>
@@ -66,7 +66,7 @@ function Home() {
               <span
                 className={isFetching ? "text-yellow-400" : "text-green-400"}
               >
-                {isFetching ? "true" : "false"}
+                {isFetching ? "Yes" : "No"}
               </span>
             </p>
           </div>
