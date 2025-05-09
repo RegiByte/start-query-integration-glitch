@@ -4,7 +4,7 @@ import { userDataQueryOptions, useUserData } from "~/queries/userData";
 
 export const Route = createFileRoute("/")({
   component: Home,
-  ssr: false,
+  ssr: false, // with and without ssr, the bug happens, a bit differently in each case
   loader: async ({ context }) => {
     const { queryClient } = context;
 
