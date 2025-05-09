@@ -120,7 +120,7 @@ function Home() {
           </li>
         </ol>
         <p className="text-sm italic text-blue-200">
-          The query is set with a staleTime of 60 seconds, so the server cache
+          The query is set with a staleTime of 10 seconds, so the server cache
           persists between reloads.
         </p>
       </div>
