@@ -1,72 +1,65 @@
-# Welcome to TanStack.com!
+# TanStack Query + Start Data Leakage Bug Demo
 
-This site is built with TanStack Router!
+This project demonstrates a very sneaky bug that occurs when using TanStack Query with TanStack Start and a globally declared QueryClient.
 
-- [TanStack Router Docs](https://tanstack.com/router)
+## The Bug
 
-It's deployed automagically with Netlify!
+When using TanStack Start with TanStack Query, declaring the QueryClient globally can cause a serious data leakage issue:
 
-- [Netlify](https://netlify.com/)
+**Data from one user can leak to requests from another user on the same server instance.**
 
-## Development
+This happens because:
+- The global QueryClient is shared across all server requests that hit the same server instance
+- The query cache persists data on the server and avoids refetching until the staleTime is reached
+
+## Getting Started
 
 From your terminal:
 
 ```sh
+# Install dependencies
 pnpm install
-pnpm dev
+
+# Start the development server
+pnpm run dev
 ```
 
-This starts your app in development mode, rebuilding assets on file changes.
+## How to Reproduce the Bug
 
-## Editing and previewing the docs of TanStack projects locally
+1. Open the application in your browser
+2. Note that initially there is no active user set
+3. Set an active user (e.g., user_1) and reload the page
+4. You should see that user's data appear
+5. Now set a different active user (e.g., user_2) and reload again
+6. With the global QueryClient (current setup), you'll see the first user's data
 
-The documentations for all TanStack projects except for `React Charts` are hosted on [https://tanstack.com](https://tanstack.com), powered by this TanStack Router app.
-In production, the markdown doc pages are fetched from the GitHub repos of the projects, but in development they are read from the local file system.
+## The Solution
 
-Follow these steps if you want to edit the doc pages of a project (in these steps we'll assume it's [`TanStack/form`](https://github.com/tanstack/form)) and preview them locally :
+The fix is simple: create a new QueryClient for each router instance instead of using a global one.
 
-1. Create a new directory called `tanstack`.
+```tsx
+// GOOD: Create a new QueryClient per router instance
+export function createRouter() {
+  // Create a fresh query client for each request
+  const queryClient = new QueryClient();
 
-```sh
-mkdir tanstack
+  return routerWithQueryClient(
+    createTanStackRouter({
+      routeTree,
+      context: { queryClient },
+      // ... other options
+    }),
+    queryClient
+  );
+}
 ```
 
-2. Enter the directory and clone this repo and the repo of the project there.
+This ensures each server request gets its own isolated query cache and prevents data leakage between different users.
 
-```sh
-cd tanstack
-git clone git@github.com:TanStack/tanstack.com.git
-git clone git@github.com:TanStack/form.git
-```
+## Key Files
 
-> [!NOTE]
-> Your `tanstack` directory should look like this:
->
-> ```
-> tanstack/
->    |
->    +-- form/
->    |
->    +-- tanstack.com/
-> ```
-
-> [!WARNING]
-> Make sure the name of the directory in your local file system matches the name of the project's repo. For example, `tanstack/form` must be cloned into `form` (this is the default) instead of `some-other-name`, because that way, the doc pages won't be found.
-
-3. Enter the `tanstack/tanstack.com` directory, install the dependencies and run the app in dev mode:
-
-```sh
-cd tanstack.com
-pnpm i
-# The app will run on https://localhost:3000 by default
-pnpm dev
-```
-
-4. Now you can visit http://localhost:3000/form/latest/docs/overview in the browser and see the changes you make in `tanstack/form/docs`.
-
-> [!NOTE]
-> The updated pages need to be manually reloaded in the browser.
-
-> [!WARNING]
-> You will need to update the `docs/config.json` file (in the project's repo) if you add a new doc page!
+- `src/router.tsx` - Shows the problematic setup with a global QueryClient
+- `src/queryClient.ts` - Contains the global QueryClient declaration
+- `src/actions/getUserData.ts` - Simple server action to fetch user-specific data
+- `src/hooks/activeUser.ts` - Hook to manage the active user state
+- `src/routes/index.tsx` - Home page with the bug demonstration

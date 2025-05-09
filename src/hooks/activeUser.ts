@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
 
-const cookieKey = "active_user";
+export const cookieKey = "active_user";
 
 export function useActiveUser() {
   const [activeUser, setActiveUser] = useState<string | null>(null);
@@ -17,12 +17,20 @@ export function useActiveUser() {
   }, []);
 
   const setUser = (newUser: string) => {
-    Cookies.set(cookieKey, newUser);
+    Cookies.set(cookieKey, newUser, {
+      sameSite: "lax",
+    });
     setActiveUser(newUser);
+  };
+
+  const clearUser = () => {
+    Cookies.remove(cookieKey);
+    setActiveUser(null);
   };
 
   return {
     activeUser,
     setUser,
+    clearUser,
   };
 }
