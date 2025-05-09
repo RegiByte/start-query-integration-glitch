@@ -9,7 +9,8 @@ import { queryClient } from "./queryClient"; // use this to see the bug in actio
 export function createRouter() {
   // The query client should be declared here
   // Because the server will instantiate the router for each request
-  // Thus each request will have its own query client context to load data
+  // Thus each request will have its own query client and cache to manage query data
+  // Uncomment the line below to fix the bug
   // const queryClient = new QueryClient();
 
   return routerWithQueryClient(
