@@ -108,7 +108,7 @@ function Home() {
             Note that initially there is no active user set
           </li>
           <li className="mb-2">
-            Set an active user below (e.g., user_1) and reload the page
+            Set an active user above (e.g., user_1) and reload the page
           </li>
           <li className="mb-2">You should see that user's data appear</li>
           <li className="mb-2">
@@ -149,6 +149,9 @@ export function createRouter() {
         </div>
         <p className="mt-3 text-sm italic text-gray-300">
           This ensures each server request gets its own isolated query cache.
+        </p>
+        <p className="mt-3 text-sm italic text-gray-300">
+          Try reproducing the bug again with the new solution.
         </p>
       </div>
     </div>
